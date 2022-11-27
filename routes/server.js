@@ -45,7 +45,7 @@ const Role = db.role;
 
 
 db.mongoose
-  .connect("mongodb://localhost:27017/test", {
+  .connect("mongodb://0.0.0.0:27017/test", {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -57,6 +57,7 @@ db.mongoose
     console.error("Connection error", err);
     process.exit();
   });
+  
 
 
 
@@ -129,11 +130,12 @@ app.get('/getstudent/:id', async (req , res) =>{
   .catch((err)=>res.json({error:err}))
 
 })
+
 app.post('/login',  async (req, res, next) =>{
+  const isStudent   = await Etudiants.findOne({ "$or": [ { Email: req.body.Email } ] });
   
-      const isStudent   = await Etudiants.findOne({ "$or": [ { Email: req.body.Email } ] });
-      const isAdmin     = await Admins.findOne({ "$or": [ { Email: req.body.Email } ] });
-      const isTeacher   = await Teachers.findOne({ "$or": [ { Email: req.body.Email } ] });
+      const isAdmin     =  await Admins.findOne({ "$or": [ { Email: req.body.Email } ] });
+      const isTeacher   =  await Teachers.findOne({ "$or": [ { Email: req.body.Email } ] });
 
      if (isStudent){
           EtudiantsModel.login(req.body.Email,req.body.Password)
@@ -151,9 +153,8 @@ app.post('/login',  async (req, res, next) =>{
       }else{
         res.json({error:"Email does not exist !"})
       }
-      
-
 })
+  
 const DecodeJWT= (token) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
@@ -228,7 +229,7 @@ app.get("/:id", (req, res) => {
 });
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
