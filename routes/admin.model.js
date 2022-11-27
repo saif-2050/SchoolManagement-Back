@@ -18,6 +18,7 @@ exports.register=async(Email, Password , Name)=>{
                         Name :  Name ,
                         Email : Email ,
                         Password : HashPassword,
+                        
                         })
                         new_Admin.save().then((user)=>{
                         resolve("succ saved")
