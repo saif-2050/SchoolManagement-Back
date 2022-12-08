@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 const secretKey = "pfmsfs2544ds!" ;
 const db = require("../models");
 
-exports.register=async(Email, cin , Name)=>{
+exports.register=async(Email,cin,Name,Phone,Birthday,Class)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -19,6 +19,10 @@ exports.register=async(Email, cin , Name)=>{
                         Email : Email ,
                         Password : HashPassword,
                         isNew : "true",
+                        Phone : Phone ,
+                        Birthday : Birthday ,
+                        Class :Class ,
+                        
                         })
                         new_Teacher.save().then((user)=>{
                         resolve("succ saved")
@@ -40,7 +44,7 @@ exports.register=async(Email, cin , Name)=>{
 
 exports.login=async(Email, Password)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -67,7 +71,7 @@ exports.login=async(Email, Password)=>{
 
 exports.setPassword=async(Id, Email, Password)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
             return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -92,4 +96,74 @@ exports.setPassword=async(Id, Email, Password)=>{
             }
         })
 })
+
+}
+exports.remove=async(Id)=>{
+    return new Promise((resolve,reject)=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+                return Teachers.findOne({"_id" : Id}) ;
+
+        }).then(async (Teacher)=>{
+            if(!Teacher){
+                reject("This teacher does not exist") ;
+            }else{
+                
+                    await Teachers.deleteOne({_id: Id}) 
+                      .then(result=>{
+                       resolve({Msg:"Teacher Deleted Successfully"});
+                      }).catch((err)=>{
+                        reject(err) ;
+    
+                    })
+
+                }
+            })
+                
+            })
+        
+}
+
+
+
+exports.getteacher=async(Id)=>{
+    return new Promise((resolve,reject)=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+                return Teachers.findOne({"_id" : Id}) ;
+
+        }).then(async (Teacher)=>{
+            if(!Teacher){
+                reject("This teacher does not exist") ;
+            }else{
+                    resolve(Teacher);
+                }
+            })
+                
+            })
+        
+}
+
+
+exports.update=async(Id , data)=>{
+    return new Promise((resolve,reject)=>{
+        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+                return Teachers.findOne({"_id" : Id}) ;
+
+        }).then(async (Teacher)=>{
+            if(!Teacher){
+                reject("This teacher does not exist") ;
+            }else{
+                //console.log(Etudiant);
+                //console.log(data.Name);
+                
+                const da = await Teachers.findOneAndUpdate({_id :Id}, 
+                    data,{new:true}) 
+                  .then(result=>{
+                    
+                    resolve({Msg:"Teacher Updated Successfully"});
+
+                }) 
+                }
+            })
+                
+            })
 }

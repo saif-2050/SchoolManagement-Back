@@ -55,7 +55,7 @@ const Role = db.role;
 
 
 db.mongoose
-  .connect("mongodb://localhost:27017/test", {
+  .connect("mongodb://0.0.0.0:27017/test", {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -67,6 +67,7 @@ db.mongoose
     console.error("Connection error", err);
     process.exit();
   });
+  
 
 
 
@@ -111,11 +112,12 @@ app.get('/getstudent/:id', async (req , res) =>{
   .catch((err)=>res.json({error:err}))
 
 })
+
 app.post('/login',  async (req, res, next) =>{
+  const isStudent   = await Etudiants.findOne({ "$or": [ { Email: req.body.Email } ] });
   
-      const isStudent   = await Etudiants.findOne({ "$or": [ { Email: req.body.Email } ] });
-      const isAdmin     = await Admins.findOne({ "$or": [ { Email: req.body.Email } ] });
-      const isTeacher   = await Teachers.findOne({ "$or": [ { Email: req.body.Email } ] });
+      const isAdmin     =  await Admins.findOne({ "$or": [ { Email: req.body.Email } ] });
+      const isTeacher   =  await Teachers.findOne({ "$or": [ { Email: req.body.Email } ] });
 
      if (isStudent){
           EtudiantsModel.login(req.body.Email,req.body.Password)
@@ -133,9 +135,8 @@ app.post('/login',  async (req, res, next) =>{
       }else{
         res.json({error:"Email does not exist !"})
       }
-      
-
 })
+  
 const DecodeJWT= (token) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
@@ -186,20 +187,55 @@ app.post('/add_etudiant', (req , res , next)=>{
   .catch((err)=>res.json({error:err}))
 })
 
-
-app.post('/add_teacher', (req , res , next)=>{
-  TeachersModel.register(req.body.Email,req.body.cin,req.body.Name)
-  .then((msg)=>res.status(200).json({Succ:msg}))
-  .catch((err)=>res.json({error:err}))
-})
-
 app.post('/add_admin', (req , res , next)=>{
   AdminsModel.register(req.body.Email,req.body.Password,req.body.Name)
   .then((msg)=>res.status(200).json({Succ:msg}))
   .catch((err)=>res.json({error:err}))
 })
 
+////********Teacher Management****** 
+app.get('/teachers', async (req , res) =>{
+  try {
+    await Teachers.find({}) // all collection of etudiants
+    .then(result=>{
+      res.send(result)
+    }) 
+  }catch(e){
+    console .log(e)
+  }
+})
+app.put('/update_teacher/:id', async (req , res) =>{
+  TeachersModel.update(req.params.id,req.body)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
 
+
+app.delete('/delete_teacher/:id', async (req , res) =>{
+  const isfound =  await Teachers.findById({'_id' : req.params.id}) 
+  if (isfound){
+
+    TeachersModel.remove(req.params.id)
+    .then((donne)=>res.status(200).json({Succ:donne}))  
+    .catch((err)=>res.json({error:err}))
+  }else{
+    res.json({error:"Teacher does not exist !"})
+  }
+})
+
+app.get('/getteacher/:id', async (req , res) =>{
+TeachersModel.getteacher(req.params.id)
+.then((donne)=>res.status(200).json({Succ:donne}))  
+.catch((err)=>res.json({error:err}))
+
+})
+
+
+app.post('/add_teacher', (req , res , next)=>{
+  TeachersModel.register(req.body.Email,req.body.cin,req.body.Name,req.body.Phone,req.body.Birthday,req.body.Class)
+  .then((msg)=>res.status(200).json({Succ:msg}))
+  .catch((err)=>res.json({error:err}))
+})
 
 ////********Class Management****** 
 
@@ -346,7 +382,7 @@ app.get('/getschedule/:id', async (req , res) =>{
 
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
