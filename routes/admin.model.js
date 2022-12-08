@@ -18,7 +18,8 @@ exports.register=async(Email, Password , Name)=>{
                         Name :  Name ,
                         Email : Email ,
                         Password : HashPassword,
-                        isNew: "true" 
+                        isNew :"true"
+                        
                         })
                         new_Admin.save().then((user)=>{
                         resolve("succ saved")
@@ -46,7 +47,7 @@ exports.login=async(Email, Password)=>{
 
         }).then(async (Admin)=>{
             if(!Admin){
-                reject("This student does not exist") ;
+                reject("This Admin does not exist") ;
             }else{
                 await bcrypt.compare(Password,Admin.Password).then((same)=>{
                    if(same){

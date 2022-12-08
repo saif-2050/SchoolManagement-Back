@@ -15,6 +15,12 @@ const AdminsModel = require("../routes/admin.model");
 const Teachers = require("../models/teacher") ;
 const TeachersModel = require("./teacher.model");
 
+const Class = require("../models/class") ;
+const ClassModel = require("./class.model");
+
+const Subject = require("../models/subject") ;
+const SubjectModel = require("./subject.model");
+
 var corsOptions = {
   origin: "*"
 };
@@ -62,45 +68,17 @@ db.mongoose
 
 
   app.get('/etudiants', async (req , res) =>{
-
-
     try {
       await Etudiants.find({}) // all collection of etudiants
       .then(result=>{
         res.send(result)
       }) 
-  
     }catch(e){
       console .log(e)
     }
-    
   })
 
 
-  app.delete('/delete_etudiant/:id', async (req , res) =>{
-
-
-    try {
-      const isfound =  await Etudiants.findById({'_id' : req.params.id}) 
-      console.log(isfound)
-      res.send("Deleted Succ")
-/*
-      if (isfound != null){
-        await Etudiants.findOneAndDelete({id : req.params.id}) 
-        .then(result=>{
-        res.send("Deleted Succ")
-      }) 
-
-      }else{
-        res.send("Eleve not Found") ;
-      }
-    
-  */
-    }catch(e){
-      console .log(e)
-    }
-    
-  })
 
  
 
@@ -205,28 +183,159 @@ app.post('/add_etudiant', (req , res , next)=>{
   .catch((err)=>res.json({error:err}))
 })
 
-app.post('/add_teacher', (req , res , next)=>{
-  TeachersModel.register(req.body.Email,req.body.cin,req.body.Name)
-  .then((msg)=>res.status(200).json({Succ:msg}))
-  .catch((err)=>res.json({error:err}))
-})
-
 app.post('/add_admin', (req , res , next)=>{
   AdminsModel.register(req.body.Email,req.body.Password,req.body.Name)
   .then((msg)=>res.status(200).json({Succ:msg}))
   .catch((err)=>res.json({error:err}))
 })
 
+////********Teacher Management****** 
+app.get('/teachers', async (req , res) =>{
+  try {
+    await Teachers.find({}) // all collection of etudiants
+    .then(result=>{
+      res.send(result)
+    }) 
+  }catch(e){
+    console .log(e)
+  }
+})
+app.put('/update_teacher/:id', async (req , res) =>{
+  TeachersModel.update(req.params.id,req.body)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
 
 
-// simple route
-app.get("/home", (req, res) => {
-  res.json({ message: "Welcome to bezkoder ." });
-});
+app.delete('/delete_teacher/:id', async (req , res) =>{
+  const isfound =  await Teachers.findById({'_id' : req.params.id}) 
+  if (isfound){
 
-app.get("/:id", (req, res) => {
-  res.json({ message: "Welcome to bezkoder nombre "+`${req.params.id}` });
-});
+    TeachersModel.remove(req.params.id)
+    .then((donne)=>res.status(200).json({Succ:donne}))  
+    .catch((err)=>res.json({error:err}))
+  }else{
+    res.json({error:"Teacher does not exist !"})
+  }
+})
+
+app.get('/getteacher/:id', async (req , res) =>{
+TeachersModel.getteacher(req.params.id)
+.then((donne)=>res.status(200).json({Succ:donne}))  
+.catch((err)=>res.json({error:err}))
+
+})
+
+
+app.post('/add_teacher', (req , res , next)=>{
+  TeachersModel.register(req.body.Email,req.body.cin,req.body.Name,req.body.Phone,req.body.Birthday,req.body.Class)
+  .then((msg)=>res.status(200).json({Succ:msg}))
+  .catch((err)=>res.json({error:err}))
+})
+
+////********Class Management****** 
+
+/// get all class
+app.get('/allclass', async (req , res) =>{
+  try {
+    await Class.find({}) // all collection of class
+    .then(result=>{
+      res.send(result)
+    }) 
+  }catch(e){
+    console .log(e)
+  }
+})
+
+/// add class
+app.post('/add_class', (req , res , next)=>{
+  ClassModel.add(req.body.ClassName)
+  .then((msg)=>res.status(200).json({Succ:msg}))
+  .catch((err)=>res.json({error:err}))
+})
+
+/// update class
+
+app.put('/update_class/:id', async (req , res) =>{
+  ClassModel.update(req.params.id,req.body)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
+
+/// delete class 
+
+app.delete('/delete_class/:id', async (req , res) =>{
+  
+    ClassModel.remove(req.params.id)
+    .then((donne)=>res.status(200).json({Succ:donne}))  
+    .catch((err)=>res.json({error:err}))
+})
+
+/// get class by id 
+
+app.get('/getclass/:id', async (req , res) =>{
+  ClassModel.get(req.params.id)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+
+})
+
+////********End Class Management*****
+
+
+
+
+////********Subject Management****** 
+
+/// get all Subject
+app.get('/allsubject', async (req , res) =>{
+  try {
+    await Subject.find({}) // all collection of Subject
+    .then(result=>{
+      res.send(result)
+    }) 
+  }catch(e){
+    console .log(e)
+  }
+})
+
+/// add Subject
+app.post('/add_subject', (req , res , next)=>{
+  SubjectModel.add(req.body.SubjectName)
+  .then((msg)=>res.status(200).json({Succ:msg}))
+  .catch((err)=>res.json({error:err}))
+})
+
+/// update Subject
+
+app.put('/update_subject/:id', async (req , res) =>{
+  SubjectModel.update(req.params.id,req.body)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
+
+/// delete Subject 
+
+app.delete('/delete_subject/:id', async (req , res) =>{
+  
+    SubjectModel.remove(req.params.id)
+    .then((donne)=>res.status(200).json({Succ:donne}))  
+    .catch((err)=>res.json({error:err}))
+})
+
+/// get Subject by id 
+
+app.get('/getsubject/:id', async (req , res) =>{
+  SubjectModel.get(req.params.id)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+
+})
+
+////********End Subject Management*****
+
+
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 9000;

@@ -25,6 +25,18 @@ const TeacherSchema = mongoose.Schema({
         type:String ,
         required :false 
     } ,
+    Phone : {
+        type:String ,
+        required :false 
+    } ,
+    Birthday : {
+        type:String ,
+        required :false 
+    },
+    Class : {
+        type :Array ,
+        required :false 
+    }
     
 
 })
