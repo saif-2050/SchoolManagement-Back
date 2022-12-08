@@ -24,7 +24,7 @@ const TeacherSchema = mongoose.Schema({
     Password : {
         type:String ,
         required :false 
-    } ,
+    } 
     
 
 })

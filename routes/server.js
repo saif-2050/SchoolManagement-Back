@@ -21,6 +21,10 @@ const ClassModel = require("./class.model");
 const Subject = require("../models/subject") ;
 const SubjectModel = require("./subject.model");
 
+
+const Schedule = require("../models/schedule") ;
+const ScheduleModel = require("./schedule.model");
+
 var corsOptions = {
   origin: "*"
 };
@@ -182,6 +186,7 @@ app.post('/add_etudiant', (req , res , next)=>{
   .catch((err)=>res.json({error:err}))
 })
 
+
 app.post('/add_teacher', (req , res , next)=>{
   TeachersModel.register(req.body.Email,req.body.cin,req.body.Name)
   .then((msg)=>res.status(200).json({Succ:msg}))
@@ -296,6 +301,46 @@ app.get('/getsubject/:id', async (req , res) =>{
 })
 
 ////********End Subject Management*****
+
+
+
+////********Schedule Management****** 
+
+/// get all Schedule
+app.get('/allschedule', async (req , res) =>{
+  try {
+    await Schedule.find({}) // all collection of Subject
+    .then(result=>{
+      res.send(result)
+    }) 
+  }catch(e){
+    console .log(e)
+  }
+})
+
+/// add Schedule
+app.post('/add_schedule', (req , res , next)=>{
+  ScheduleModel.add(req.body)
+  .then((msg)=>res.status(200).json({Succ:msg}))
+  .catch((err)=>res.json({error:err}))
+})
+
+
+/// get Schedule by id 
+
+app.get('/getschedule/:id', async (req , res) =>{
+  ScheduleModel.get(req.params.id)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+
+})
+
+
+
+
+
+
+////********End Schedule Management*****
 
 
 

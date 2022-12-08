@@ -13,7 +13,8 @@ exports.add=async(ClassName)=>{
             if(!OldClass){
               
                         let new_class = new Class({
-                            ClassName  :  ClassName
+                            ClassName  :  ClassName ,
+                            Created : "No"
                         })
                         new_class.save().then((result)=>{
                         resolve("New Class saved")

@@ -10,6 +10,7 @@ exports.register=async(Email,cin,Name,Phone,Class,Birthday)=>{
         db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Etudiants.findOne({'Email' : Email}) ;
 
+            
         }).then(async (Etudiant)=>{
             if(!Etudiant){
                 bcrypt.hash(cin , 10)
