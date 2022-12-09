@@ -3,10 +3,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const secretKey = "pfmsfs2544ds!" ;
 const db = require("../models");
+const Class = require("../models/class") ;
 
 exports.register=async(Email,cin,Name,Phone,Birthday,Class)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -44,7 +45,7 @@ exports.register=async(Email,cin,Name,Phone,Birthday,Class)=>{
 
 exports.login=async(Email, Password)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -71,7 +72,7 @@ exports.login=async(Email, Password)=>{
 
 exports.setPassword=async(Id, Email, Password)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
             return Teachers.findOne({'Email' : Email}) ;
 
         }).then(async (Teacher)=>{
@@ -82,7 +83,8 @@ exports.setPassword=async(Id, Email, Password)=>{
                 .then(async (HashPassword)=>{
                     await Teachers.findOneAndUpdate({id : Id},
                         {
-                         Password:HashPassword
+                         Password:HashPassword,
+                         isNew : "false"
                         }) 
                       .then(result=>{
                        resolve({Msg:"Password Updated Successfully"});
@@ -100,7 +102,7 @@ exports.setPassword=async(Id, Email, Password)=>{
 }
 exports.remove=async(Id)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({"_id" : Id}) ;
 
         }).then(async (Teacher)=>{
@@ -127,7 +129,7 @@ exports.remove=async(Id)=>{
 
 exports.getteacher=async(Id)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({"_id" : Id}) ;
 
         }).then(async (Teacher)=>{
@@ -142,10 +144,33 @@ exports.getteacher=async(Id)=>{
         
 }
 
+exports.getteacherByClassName=async(ClassName)=>{
+   // console.log(ClassName)
+    return new Promise((resolve,reject)=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+                return Class.findOne({'ClassName' : ClassName}) ;
+
+        }).then(async (Found)=>{
+            if(!Found){
+                reject("This Class does not exist") ;
+            }else{
+                const ClassFound =  Teachers.find({'Class' : ClassName}).then(async function(doc) {
+                    if(doc!= null){
+                        resolve(doc);
+                    }else{
+                        reject("There is no teachers teach this Class") ;
+                    }        
+                })
+                }
+            })
+                
+            })
+        
+}
 
 exports.update=async(Id , data)=>{
     return new Promise((resolve,reject)=>{
-        db.mongoose.connect("mongodb://0.0.0.0:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
+        db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{
                 return Teachers.findOne({"_id" : Id}) ;
 
         }).then(async (Teacher)=>{

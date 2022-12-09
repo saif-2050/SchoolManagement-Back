@@ -107,14 +107,31 @@ exports.remove=async(Id)=>{
             if(!OldClass){
                 reject("Schedule does not exist") ;
             }else{
-                
+                //const ClassN = Schedule.findOne({"_id" : Id}).then(async function(doc) {
+                   // console.log(OldClass.ClassName)
+            
+                    
                     await Schedule.deleteOne({_id: Id}) 
                       .then(result=>{
-                       resolve({Msg:"Schedule Deleted Successfully"});
+
+                        const ClassFound = Class.findOne({'ClassName' : OldClass.ClassName}).then(async function(doc) {
+                            if(doc!= null){
+                                const data = { Created : "No"}
+                                const da = await Class.findOneAndUpdate({_id :doc._id}, 
+                                    data,{new:true}) 
+                                  .then(result=>{
+                                    resolve({Msg:"Schedule Deleted Successfully"});
+                                }).catch((err)=>{
+                                    reject(err) ;
+            
+                                }) 
+                            }
+                                       
+                        })
                       }).catch((err)=>{
                         reject(err) ;
     
-                    })
+                    }) 
 
                 }
             })
@@ -143,6 +160,22 @@ exports.get=async(Id)=>{
 }
 
 
+exports.getByName=async(ClassName)=>{
+  
+     return new Promise((resolve,reject)=>{
+        
+        const ClassFound = Schedule.findOne({'ClassName' : ClassName}).then(async function(doc) {
+            if(doc){
+                resolve(doc)
+            }else{
+                reject("This Schedule does not exist") ;
+
+            }
+        })
+                
+        })
+         
+}
 exports.update=async(Id , data)=>{
     return new Promise((resolve,reject)=>{
         db.mongoose.connect("mongodb://localhost:27017/test", {useNewUrlParser: true,useUnifiedTopology: true}).then(()=>{

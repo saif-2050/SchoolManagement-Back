@@ -79,6 +79,25 @@ exports.get=async(Id)=>{
         
 }
 
+exports.getByName=async(ClassName)=>{
+    console.log(ClassName)
+     return new Promise((resolve,reject)=>{
+        
+        const ClassFound = Class.findOne({'ClassName' : ClassName}).then(async function(doc) {
+            if(doc){
+                resolve(doc)
+            }else{
+                reject("This Class does not exist") ;
+
+            }
+        })
+                
+        })
+         
+}
+
+
+
 
 exports.update=async(Id , data)=>{
     return new Promise((resolve,reject)=>{
@@ -103,3 +122,5 @@ exports.update=async(Id , data)=>{
             })
         
 }
+
+

@@ -55,12 +55,15 @@ const Role = db.role;
 
 
 db.mongoose
-  .connect("mongodb://0.0.0.0:27017/test", {
+  .connect("mongodb://localhost:27017/test", {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
   .then(() => {
     console.log("Successfully connect to MongoDB.");
+   
+    
+    
    // initial();
   })
   .catch(err => {
@@ -237,6 +240,13 @@ app.post('/add_teacher', (req , res , next)=>{
   .catch((err)=>res.json({error:err}))
 })
 
+app.get('/teachers/:ClassName', (req , res , next)=>{
+  console.log(req.params.ClassName)
+  TeachersModel.getteacherByClassName(req.params.ClassName)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
+
 ////********Class Management****** 
 
 /// get all class
@@ -284,8 +294,11 @@ app.get('/getclass/:id', async (req , res) =>{
 
 })
 
-////********End Class Management*****
+ 
 
+
+////********End Class Management*****
+ 
 
 
 
@@ -371,10 +384,27 @@ app.get('/getschedule/:id', async (req , res) =>{
 
 })
 
+app.put('/edit_schedule/:id', async (req , res) =>{
+  ScheduleModel.update(req.params.id,req.body)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
 
+})
 
+app.delete('/delete_schedule/:id', async (req , res) =>{
+  
+  ScheduleModel.remove(req.params.id)
+  .then((donne)=>res.status(200).json({Succ:donne}))  
+  .catch((err)=>res.json({error:err}))
+})
 
+app.get('/scheduleByName/:ClassName', async (req , res) =>{
+  // console.log(req.params.ClassName)
+  ScheduleModel.getByName(req.params.ClassName)
+ .then((donne)=>res.status(200).json({Succ:donne}))  
+ .catch((err)=>res.json({error:err})) 
 
+})  
 
 ////********End Schedule Management*****
 
